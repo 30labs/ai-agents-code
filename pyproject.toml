@@ -1,0 +1,18 @@
+[project]
+name = "ai-agents-code"
+version = "0.1.0"
+description = "Runnable code for AI agents for developers"
+requires-python = ">=3.12"
+dependencies = [
+    "openai==3.19.1",
+    "pydantic==2.13.5",
+    "pytest>=9.1.1",
+]
+
+[project.optional-dependencies]
+mcp = ["mcp==2.3.0"]
+pydantic-ai = ["pydantic-ai==2.54.0"]
+langgraph = ["langgraph==1.2.22", "langchain-openai==1.8.1"]
+
+[tool.uv]
+package = false
