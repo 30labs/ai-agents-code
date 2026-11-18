@@ -163,6 +163,18 @@ def _get_json(url: str) -> dict[str, Any]:
     return data
 
 
+def loaded_context(base_url: str, model: str) -> int | None:
+    "The context window the server gave the loaded model."
+    root = base_url.rstrip("/").removesuffix("/v1")
+    try:
+        for item in _get_json(f"{root}/api/ps")["models"]:
+            if item.get("name") == model:
+                return int(item["context_length"])
+    except (OSError, KeyError, ValueError, TypeError):
+        pass
+    return None
+
+
 def _gpu() -> str:
     if not shutil.which("nvidia-smi"):
         return "none found"
@@ -397,6 +409,9 @@ def main(argv: list[str] | None = None) -> int:
 
     card["finished"] = datetime.now(UTC).isoformat(
         timespec="seconds"
+    )
+    card["context_length"] = loaded_context(
+        args.base_url, args.model
     )
     _save(
         cards,

@@ -1,0 +1,185 @@
+[
+ {
+  "id": "react-20261118T010138Z",
+  "strategy": "react",
+  "date": "2026-11-18T01:01:38+00:00",
+  "model": "qwen3:8b",
+  "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "server": "Ollama 0.35.1",
+  "base_url": "http://127.0.0.1:11435/v1/",
+  "openai_sdk": "3.19.1",
+  "python": "3.12.3",
+  "hardware": {
+   "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+   "machine": "x86_64",
+   "cpus": 12,
+   "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU, 8151 MiB"
+  },
+  "temperature": 0.6,
+  "seeds": "7 + trial",
+  "scenarios": [
+   "api-deploy",
+   "checkout-capacity",
+   "checkout-deploy",
+   "downstream-tax",
+   "false-alarm",
+   "injected-log",
+   "inventory-dependency",
+   "long-catalog",
+   "payment-flag",
+   "queue-capacity",
+   "recommendation-flag",
+   "red-herring-deploy"
+  ],
+  "trials": 8,
+  "budget": {
+   "steps": 12,
+   "tokens": 40000,
+   "seconds": 300,
+   "errors": 3
+  },
+  "cost_usd": 0.0,
+  "cost_note": "local model; no API spend",
+  "finished": "2026-11-18T01:44:46+00:00",
+  "context_length": 8192
+ },
+ {
+  "id": "plan-20261118T014448Z",
+  "strategy": "plan",
+  "date": "2026-11-18T01:44:48+00:00",
+  "model": "qwen3:8b",
+  "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "server": "Ollama 0.35.1",
+  "base_url": "http://127.0.0.1:11435/v1/",
+  "openai_sdk": "3.19.1",
+  "python": "3.12.3",
+  "hardware": {
+   "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+   "machine": "x86_64",
+   "cpus": 12,
+   "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU, 8151 MiB"
+  },
+  "temperature": 0.6,
+  "seeds": "7 + trial",
+  "scenarios": [
+   "api-deploy",
+   "checkout-capacity",
+   "checkout-deploy",
+   "downstream-tax",
+   "false-alarm",
+   "injected-log",
+   "inventory-dependency",
+   "long-catalog",
+   "payment-flag",
+   "queue-capacity",
+   "recommendation-flag",
+   "red-herring-deploy"
+  ],
+  "trials": 5,
+  "budget": {
+   "steps": 12,
+   "tokens": 40000,
+   "seconds": 300,
+   "errors": 3
+  },
+  "cost_usd": 0.0,
+  "cost_note": "local model; no API spend",
+  "finished": "2026-11-18T02:12:08+00:00",
+  "context_length": 8192
+ },
+ {
+  "id": "parallel-20261118T021209Z",
+  "strategy": "parallel",
+  "date": "2026-11-18T02:12:09+00:00",
+  "model": "qwen3:8b",
+  "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "server": "Ollama 0.35.1",
+  "base_url": "http://127.0.0.1:11435/v1/",
+  "openai_sdk": "3.19.1",
+  "python": "3.12.3",
+  "hardware": {
+   "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+   "machine": "x86_64",
+   "cpus": 12,
+   "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU, 8151 MiB"
+  },
+  "temperature": 0.6,
+  "seeds": "7 + trial",
+  "scenarios": [
+   "api-deploy",
+   "checkout-capacity",
+   "checkout-deploy",
+   "downstream-tax",
+   "false-alarm",
+   "injected-log",
+   "inventory-dependency",
+   "long-catalog",
+   "payment-flag",
+   "queue-capacity",
+   "recommendation-flag",
+   "red-herring-deploy"
+  ],
+  "trials": 5,
+  "budget": {
+   "steps": 12,
+   "tokens": 40000,
+   "seconds": 300,
+   "errors": 3
+  },
+  "cost_usd": 0.0,
+  "cost_note": "local model; no API spend",
+  "finished": "2026-11-18T02:38:34+00:00",
+  "context_length": 8192
+ },
+ {
+  "id": "team-20261118T023835Z",
+  "strategy": "team",
+  "date": "2026-11-18T02:38:35+00:00",
+  "model": "qwen3:8b",
+  "model_digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "server": "Ollama 0.35.1",
+  "base_url": "http://127.0.0.1:11435/v1/",
+  "openai_sdk": "3.19.1",
+  "python": "3.12.3",
+  "hardware": {
+   "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+   "machine": "x86_64",
+   "cpus": 12,
+   "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU, 8151 MiB"
+  },
+  "temperature": 0.6,
+  "seeds": "7 + trial",
+  "scenarios": [
+   "api-deploy",
+   "checkout-capacity",
+   "checkout-deploy",
+   "downstream-tax",
+   "false-alarm",
+   "injected-log",
+   "inventory-dependency",
+   "long-catalog",
+   "payment-flag",
+   "queue-capacity",
+   "recommendation-flag",
+   "red-herring-deploy"
+  ],
+  "trials": 5,
+  "budget": {
+   "steps": 12,
+   "tokens": 40000,
+   "seconds": 300,
+   "errors": 3
+  },
+  "sub_budget": {
+   "steps": 6,
+   "tokens": 20000,
+   "seconds": 120,
+   "errors": 3
+  },
+  "most_subagents": 6,
+  "cost_usd": 0.0,
+  "cost_note": "local model; no API spend",
+  "finished": "2026-11-18T03:12:25+00:00",
+  "context_length": 8192
+ }
+]
