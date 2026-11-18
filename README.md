@@ -17,6 +17,8 @@ This repository contains the runnable `opsworld` incident simulator, its on-call
 - `team.py` — chapter 12.
 - `evals.py` — chapter 13.
 - `suite.py` — chapter 13.
+- `runs.json` — the recorded suite run, one record per trial (chapters 6, 12, 13 and 14).
+- `run_card.json` — the model, server, context window, hardware and budget of each strategy's run (chapter 13).
 - `cost_parts.py` — chapter 14.
 - `frameworks/__init__.py` — chapter 15.
 - `frameworks/pydantic_ai_oncall.py` — chapter 15.
