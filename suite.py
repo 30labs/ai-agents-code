@@ -48,7 +48,7 @@ from team import (
     team_run,
 )
 
-STRATEGIES = ("react", "plan", "parallel", "team")
+STRATEGIES = ("react", "plan", "parallel", "team", "guarded")
 HERE = Path(__file__).resolve().parent
 
 
@@ -77,6 +77,8 @@ class Record:
     lead_tokens: int
     subagents: int
     cached_tokens: int
+    refusals: list[str] | None = None
+    retried: bool = False
 
 
 def run_trial(
@@ -97,6 +99,15 @@ def run_trial(
     start = time.monotonic()
     if strategy == "react":
         r = run(meter, world, react_opening(world), budget)
+        answer, ended, read = r.answer, r.reason, r.read
+        tool_calls = len(r.read) + r.repeats
+        rounds = meter.tool_turns
+        refusals: list[str] = []
+        retried = False
+    elif strategy == "guarded":
+        r, refusals, retried = run_guarded(
+            meter, world, react_opening(world), budget
+        )
         answer, ended, read = r.answer, r.reason, r.read
         tool_calls = len(r.read) + r.repeats
         rounds = meter.tool_turns
@@ -135,7 +146,7 @@ def run_trial(
     else:
         passed, reason, remedy = False, "no answer", ""
     meters = [meter, *subs]
-    return {
+    result = {
         "passed": passed,
         "check": reason,
         "remedy": remedy,
@@ -153,6 +164,101 @@ def run_trial(
         "subagents": len(subs),
         "cached_tokens": sum(m.cached_tokens for m in meters),
     }
+    if strategy == "guarded":
+        result["refusals"] = refusals
+        result["retried"] = retried
+    return result
+
+
+def run_guarded(
+    model: Model,
+    world: World,
+    messages: list[dict[str, Any]],
+    budget: Budget,
+) -> tuple[Any, list[str], bool]:
+    "Chapter 5 loop with chapter 7 and 11 remedy checks."
+    from guards import before, fixed_set, gate, note
+    from plan_parts import parse_remedy
+
+    started = time.monotonic()
+    fixed = fixed_set(world)
+    first = run(model, world, messages, budget)
+    total = first
+    refusals: list[str] = []
+    retried = False
+    answer = first.answer
+    if answer:
+        try:
+            remedy = parse_remedy(answer)
+        except ValueError:
+            remedy = None
+        if remedy is not None:
+            timeline = before(world, remedy)
+            if not timeline.ok:
+                refusals.append(timeline.why)
+                messages.append({
+                    "role": "user",
+                    "content": note(remedy, timeline),
+                })
+            elif remedy not in fixed:
+                gate_result = gate(remedy, fixed, [
+                    item for item in first.read
+                    if item.startswith("search_logs ")
+                ])
+                reason = (
+                    gate_result.removeprefix("refuse: ")
+                    if gate_result.startswith("refuse:")
+                    else "not in the fixed set"
+                )
+                refusals.append(reason)
+                messages.append({
+                    "role": "user",
+                    "content": (
+                        f"Your remedy {remedy.tool} "
+                        f"{remedy.arguments} failed a check: "
+                        f"{reason}. Propose another remedy,"
+                        " or none."
+                    ),
+                })
+            else:
+                return first, refusals, retried
+            retried = True
+            elapsed = time.monotonic() - started
+            remaining = Budget(
+                steps=max(0, budget.steps - first.steps),
+                tokens=max(0, budget.tokens - first.tokens),
+                seconds=max(0, budget.seconds - elapsed),
+                errors=budget.errors,
+            )
+            second = run(model, world, messages, remaining)
+            total = second
+            total.steps += first.steps
+            total.tokens += first.tokens
+            total.repeats += first.repeats
+            total.read = first.read + second.read
+            answer = second.answer
+            retry_remedy = None
+            if answer:
+                try:
+                    retry_remedy = parse_remedy(answer)
+                except ValueError:
+                    retry_remedy = None
+                if retry_remedy is not None:
+                    timeline = before(world, retry_remedy)
+                    if not timeline.ok:
+                        refusals.append(timeline.why)
+                    elif retry_remedy not in fixed:
+                        refusals.append("not in the fixed set")
+            if refusals and (
+                retry_remedy is not None
+                and (
+                    not before(world, retry_remedy).ok
+                    or retry_remedy not in fixed
+                )
+            ):
+                total.answer = ""
+                total.reason = refusals[-1]
+    return total, refusals, retried
 
 
 def _get_json(url: str) -> dict[str, Any]:
@@ -260,7 +366,7 @@ def models_for(
     from openai import OpenAI
 
     client = OpenAI(base_url=base_url, api_key="ollama")
-    if strategy in ("react", "team"):
+    if strategy in ("react", "team", "guarded"):
         found = (
             lead_tools if strategy == "team" else definitions
         )
@@ -395,7 +501,11 @@ def main(argv: list[str] | None = None) -> int:
                 seed=seed,
                 **result,
             )
-            save_record(runs, asdict(record))
+            record_data = asdict(record)
+            if args.strategy != "guarded":
+                record_data.pop("refusals")
+                record_data.pop("retried")
+            save_record(runs, record_data)
             print(
                 f"{scenario} t{trial}: "
                 f"{'pass' if record.passed else 'fail'} "
