@@ -27,26 +27,27 @@ def run(
     start, last_in, errors = time.monotonic(), 0, 0
     seen: dict[str, int] = {}
     while True:
-        spent = time.monotonic() - start
-        why = limit(budget, r, last_in, errors, spent)
+        why = limit(budget, r, last_in, errors,
+                    time.monotonic() - start)
         if why or halted():
             r.reason = why or "stopped by a person"
             return r
         turn = model(messages)
         r.steps += 1
-        r.tokens += turn.input_tokens
-        r.tokens += turn.output_tokens
         last_in = turn.input_tokens
+        r.tokens += last_in + turn.output_tokens
         messages.append(turn.message())
         if turn.calls:
-            bad = act(world, turn, r, seen, messages)
+            bad = act(world, turn, r,
+                      seen, messages)
             errors = errors + 1 if bad else 0
-        elif turn.finish == "stop":
-            r.answer, r.reason = turn.text, "answered"
+            continue
+        if turn.finish == "stop":
+            r.answer = turn.text
+            r.reason = "answered"
             return r
-        else:
-            r.reason = f"model stopped: {turn.finish}"
-            return r
+        r.reason = f"model stopped: {turn.finish}"
+        return r
 
 
 def limit(
@@ -74,8 +75,9 @@ def act(
     for c in turn.calls:
         if (k := key(c)) in seen:
             r.repeats += 1
-            text = ("ERROR: you made this call at"
-                    f" step {seen[k]}. Make another.")
+            text = ("ERROR: you made this call"
+                    f" at step {seen[k]}."
+                    " Make another.")
         else:
             seen[k] = r.steps
             r.read.append(f"{c.name} {c.arguments}")
