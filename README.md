@@ -2,6 +2,8 @@
 
 This repository contains the runnable `opsworld` incident simulator, its on-call tools and loop, an MCP server, the evaluation suite, and framework versions of the agent. Install dependencies with `uv sync --extra mcp` (or the relevant framework extra), start Ollama with `qwen3:8b`, and run a framework with `uv run --extra pydantic-ai python -m frameworks.pydantic_ai_oncall downstream-tax` or `uv run --extra langgraph python -m frameworks.langgraph_oncall downstream-tax`. The MCP server runs with `uv run --extra mcp python mcp_server.py`; the checks use local fakes and do not call Ollama.
 
+The code is released under the MIT License (see `LICENSE`).
+
 - `opsworld.py` — chapter 1.
 - `test_opsworld.py` — chapter 1.
 - `oncall_tools.py` — chapter 3.
